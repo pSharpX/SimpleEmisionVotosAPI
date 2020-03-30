@@ -41,4 +41,6 @@ EVAM04_EMISIONVOTO_API/.classpath
 
 target/
 
+ObjectStore/
+
 EVAM04_EMISIONVOTO_CORE/.classpath

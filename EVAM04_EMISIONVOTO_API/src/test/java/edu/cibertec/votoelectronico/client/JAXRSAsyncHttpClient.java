@@ -14,9 +14,11 @@ import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 @Component
+@Primary
 public class JAXRSAsyncHttpClient implements CommonAsyncHttpClient {
 
 	private final Logger LOG = LoggerFactory.getLogger(JAXRSAsyncHttpClient.class);

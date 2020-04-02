@@ -1,8 +1,12 @@
 package edu.cibertec.votoelectronico.resource;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -33,7 +37,10 @@ public class SimpleSSEVotoElectronicoResource implements SSEVotoElectronicoResou
 
 	private final Logger LOG = LoggerFactory.getLogger(SimpleSSEVotoElectronicoResource.class);
 
-	Sse sse;
+	private Sse sse;
+
+	private final Lock readLock;
+	private final Lock writeLock;
 
 	@Autowired
 	private VotoService service;
@@ -42,7 +49,13 @@ public class SimpleSSEVotoElectronicoResource implements SSEVotoElectronicoResou
 
 	private SseBroadcaster sseBroadcaster;
 	private int lastEventId;
-	private List<ResumenProcesoResponse> messages = new ArrayList<ResumenProcesoResponse>();
+	private final List<ResumenProcesoResponse> messages = new ArrayList<ResumenProcesoResponse>();
+
+	public SimpleSSEVotoElectronicoResource() {
+		ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
+		this.readLock = readWriteLock.readLock();
+		this.writeLock = readWriteLock.writeLock();
+	}
 
 	@PostConstruct
 	public void init() {
@@ -54,24 +67,43 @@ public class SimpleSSEVotoElectronicoResource implements SSEVotoElectronicoResou
 		this.sse = sse;
 		this.sseBroadcaster = this.sse.newBroadcaster();
 		this.sseBroadcaster.onError((o, e) -> {
-			LOG.error("Ocurred an error on broadcasting. " + e.getMessage());
+			LOG.error("Ocurred an error on broadcasting: ", e);
+		});
+		this.sseBroadcaster.onClose((eventSink) -> {
+			LOG.info("Broadcast closed: ", eventSink);
 		});
 	}
 
+	// @Lock(READ)
 	@Override
-	public void obtenerResultados(int lastEventId, SseEventSink eventSink) {
-		if (lastEventId >= 0)
-			this.replyLastMessage(lastEventId, eventSink);
-		sseBroadcaster.register(eventSink);
+	public void obtenerResultados(int lastEventId, SseEventSink eventSink) throws IOException {
+		readLock.lock();
+		try {
+//			if (lastEventId >= 0)
+//				this.replyLastMessage(lastEventId, eventSink);
+			sseBroadcaster.register(eventSink);
+			LOG.info("Client has being registered");
+		} finally {
+			readLock.unlock();
+		}
+
 	}
 
+//	 @Lock(WRITE)
 	@Override
 	public void onEmitirVotoEvent(EmitirVotoEvent domainEvent) {
-		LOG.info("EmitirVoto Event received");
-		ResumenProcesoResponse response = this.fetchResumenProceso();
-		OutboundSseEvent event = createEvent(response, ++this.lastEventId);
-		LOG.info("Server about to send Event");
-		this.sseBroadcaster.broadcast(event);
+		writeLock.lock();
+		try {
+			LOG.info("EmitirVoto Event received");
+			ResumenProcesoResponse response = null;//this.fetchResumenProceso();
+			//this.messages.add(response);
+			OutboundSseEvent event = createEvent(response, 1);
+//			OutboundSseEvent event = createEvent(response, ++this.lastEventId);
+			LOG.info("Server about to send Event");
+			this.sseBroadcaster.broadcast(event);
+		} finally {
+			writeLock.unlock();
+		}
 	}
 
 	private void replyLastMessage(int lastEventId, SseEventSink eventSink) {

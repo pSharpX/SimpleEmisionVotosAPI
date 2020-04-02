@@ -1,5 +1,7 @@
 package edu.cibertec.votoelectronico.resource;
 
+import java.io.IOException;
+
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -19,9 +21,9 @@ public interface SSEVotoElectronicoResource {
 
 	@GET
 	@Path("/resultado")
-	@Produces({ MediaType.SERVER_SENT_EVENTS })
+	@Produces(MediaType.SERVER_SENT_EVENTS)
 	public void obtenerResultados(@HeaderParam(HttpHeaders.LAST_EVENT_ID_HEADER) @DefaultValue("-1") int lastEventId,
-			@Context SseEventSink eventSink);
+			@Context SseEventSink eventSink) throws IOException;
 
 	@EventListener
 	public void onEmitirVotoEvent(EmitirVotoEvent domainEvent);

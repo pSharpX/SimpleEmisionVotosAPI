@@ -32,18 +32,19 @@ public class JAXRSAsyncHttpClientWithSSE implements CommonAsyncHttpClient, HttpC
 	}
 
 	@Override
-	public <T> void listenOn(String path, Map<String, Object> header, Consumer<T> consumer, Class<T> responseType) {
+	public <T> SseEventSource listenOn(String path, Map<String, Object> header, Consumer<T> consumer,
+			Class<T> responseType) {
 		Client client = ClientBuilder.newClient();
 		WebTarget target = client.target(path);
-		try (SseEventSource source = SseEventSource.target(target).build()) {
-			source.register((inboundSseEvent) -> {
-				LOG.info("Event has just arrived");
-				final T data = inboundSseEvent.readData(responseType, MediaType.APPLICATION_JSON_TYPE);
-				if (consumer != null)
-					consumer.accept(data);
-			});
-			source.open();
-		}
+		SseEventSource source = SseEventSource.target(target).build();
+		source.register((inboundSseEvent) -> {
+			LOG.info(inboundSseEvent.toString());
+			final T data = inboundSseEvent.readData(responseType, MediaType.APPLICATION_JSON_TYPE);
+			if (consumer != null)
+				consumer.accept(data);
+		});
+		source.open();
+		return source;
 	}
 
 }

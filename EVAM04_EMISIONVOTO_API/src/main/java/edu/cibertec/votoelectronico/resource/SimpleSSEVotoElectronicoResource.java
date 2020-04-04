@@ -11,9 +11,15 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
@@ -49,7 +55,7 @@ public class SimpleSSEVotoElectronicoResource implements SSEVotoElectronicoResou
 
 	private SseBroadcaster sseBroadcaster;
 	private int lastEventId;
-	private final List<ResumenProcesoResponse> messages = new ArrayList<ResumenProcesoResponse>();
+	private List<ResumenProcesoResponse> messages = new ArrayList<ResumenProcesoResponse>();
 
 	public SimpleSSEVotoElectronicoResource() {
 		ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
@@ -74,31 +80,31 @@ public class SimpleSSEVotoElectronicoResource implements SSEVotoElectronicoResou
 		});
 	}
 
-	// @Lock(READ)
+	@GET
+	@Path("/resultado")
+	@Produces(MediaType.SERVER_SENT_EVENTS)
 	@Override
-	public void obtenerResultados(int lastEventId, SseEventSink eventSink) throws IOException {
+	public void obtenerResultados(@HeaderParam(HttpHeaders.LAST_EVENT_ID_HEADER) @DefaultValue("-1") int lastEventId,
+			@Context SseEventSink eventSink) throws IOException {
 		readLock.lock();
 		try {
-//			if (lastEventId >= 0)
-//				this.replyLastMessage(lastEventId, eventSink);
+			if (lastEventId >= 0)
+				this.replyLastMessage(lastEventId, eventSink);
 			sseBroadcaster.register(eventSink);
 			LOG.info("Client has being registered");
 		} finally {
 			readLock.unlock();
 		}
-
 	}
 
-//	 @Lock(WRITE)
 	@Override
 	public void onEmitirVotoEvent(EmitirVotoEvent domainEvent) {
 		writeLock.lock();
 		try {
 			LOG.info("EmitirVoto Event received");
-			ResumenProcesoResponse response = null;//this.fetchResumenProceso();
-			//this.messages.add(response);
-			OutboundSseEvent event = createEvent(response, 1);
-//			OutboundSseEvent event = createEvent(response, ++this.lastEventId);
+			ResumenProcesoResponse response = this.fetchResumenProceso();
+			this.messages.add(response);
+			OutboundSseEvent event = createEvent(response, ++this.lastEventId);
 			LOG.info("Server about to send Event");
 			this.sseBroadcaster.broadcast(event);
 		} finally {
@@ -133,7 +139,8 @@ public class SimpleSSEVotoElectronicoResource implements SSEVotoElectronicoResou
 	}
 
 	private OutboundSseEvent createEvent(ResumenProcesoResponse response, int id) {
-		return this.sse.newEventBuilder().id(String.valueOf(id)).data(response).build();
+		return this.sse.newEventBuilder().id(String.valueOf(id)).data(response)
+				.mediaType(MediaType.APPLICATION_JSON_TYPE).build();
 	}
 
 }

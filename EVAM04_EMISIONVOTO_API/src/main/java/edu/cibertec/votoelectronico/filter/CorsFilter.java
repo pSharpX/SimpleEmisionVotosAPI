@@ -1,6 +1,7 @@
 package edu.cibertec.votoelectronico.filter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,7 +32,7 @@ public class CorsFilter implements ContainerResponseFilter, ContainerRequestFilt
 
 	private static final String HEADER_ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
 
-	private Set<String> allowedOrigins = new HashSet<>();
+	private Set<String> allowedOrigins = new HashSet<>(Arrays.asList("*"));
 
 	public Set<String> getAllowedOrigins() {
 		return allowedOrigins;

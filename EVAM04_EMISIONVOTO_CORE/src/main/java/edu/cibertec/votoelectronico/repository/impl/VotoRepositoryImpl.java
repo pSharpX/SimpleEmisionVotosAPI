@@ -127,7 +127,7 @@ public class VotoRepositoryImpl extends BaseRepository implements VotoRepository
 			return voto;
 		} catch (NonUniqueResultException e) {
 			LOG.error("Se encontraron varios votos con el mismo dni " + dni + ". " + e.getMessage());
-			return voto;
+			throw e;
 		}
 	}
 

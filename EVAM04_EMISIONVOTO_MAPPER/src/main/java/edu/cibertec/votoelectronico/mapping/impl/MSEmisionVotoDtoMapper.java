@@ -18,8 +18,8 @@ public interface MSEmisionVotoDtoMapper extends EmisionVotoDtoMapper {
 	}
 
 	@Mapping(target = "dni", source = "object.dni")
-	@Mapping(target = "fecha", source = "object.fecha")
 	@Mapping(target = "grupoPolitico", source = "object.grupoPolitico", qualifiedBy = StringToGrupoPoliticoMapper.class)
+	@Mapping(target = "fecha", source = "object.fecha", dateFormat = "yyyyMMddHHmmss") // dd-MM-yyyy HH:mm:ss
 	Voto convertTo(EmisionVotoDto object);
 
 	@StringToGrupoPoliticoMapper

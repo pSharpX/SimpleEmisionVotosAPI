@@ -1,19 +1,17 @@
 package edu.cibertec.votoelectronico.dto;
 
-import java.util.Date;
-
 public class VotoDto {
 
 	private String votoId;
 	private String grupoPolitico;
 	private String dni;
-	private Date fecha;
+	private String fecha;
 
 	public VotoDto() {
 		super();
 	}
 
-	public VotoDto(String votoId, String grupoPolitico, String dni, Date fecha) {
+	public VotoDto(String votoId, String grupoPolitico, String dni, String fecha) {
 		super();
 		this.votoId = votoId;
 		this.grupoPolitico = grupoPolitico;
@@ -45,11 +43,11 @@ public class VotoDto {
 		this.dni = dni;
 	}
 
-	public Date getFecha() {
+	public String getFecha() {
 		return fecha;
 	}
 
-	public void setFecha(Date fecha) {
+	public void setFecha(String fecha) {
 		this.fecha = fecha;
 	}
 

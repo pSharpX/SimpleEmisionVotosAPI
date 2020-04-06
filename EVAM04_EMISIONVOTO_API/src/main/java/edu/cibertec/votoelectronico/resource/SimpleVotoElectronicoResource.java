@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -88,18 +89,13 @@ public class SimpleVotoElectronicoResource implements VotoElectronicoResource {
 	}
 
 	@Override
-	public Response emitirVoto(EmisionVotoDto resource) {
+	public Response emitirVoto(EmisionVotoDto resource) throws ConstraintViolationException {
 		try {
 			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 			Validator validator = factory.getValidator();
 			Set<ConstraintViolation<EmisionVotoDto>> violations = validator.validate(resource);
 			if (violations.size() > 0) {
-				StringBuilder errors = new StringBuilder();
-				for (ConstraintViolation<EmisionVotoDto> violation : violations) {
-					errors.append(violation.getMessage() + ", ");
-				}
-				return Response.status(Response.Status.BAD_REQUEST).entity(new EmisionVotoResponse(errors.toString()))
-						.build();
+				throw new ConstraintViolationException(violations);
 			}
 
 			GrupoPolitico grupoPolitico = this.grupoPoliticoService.findByName(resource.getGrupoPolitico());
@@ -112,6 +108,8 @@ public class SimpleVotoElectronicoResource implements VotoElectronicoResource {
 			this.votoService.emitirVoto(voto);
 			VotoDto votoDto = this.mapper.convertFrom(voto, VotoDto.class);
 			return Response.status(Response.Status.CREATED).entity(new EmisionVotoResponse(votoDto)).build();
+		} catch (ConstraintViolationException e) {
+			throw e;
 		} catch (Exception e) {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(new EmisionVotoResponse(e.getMessage())).build();

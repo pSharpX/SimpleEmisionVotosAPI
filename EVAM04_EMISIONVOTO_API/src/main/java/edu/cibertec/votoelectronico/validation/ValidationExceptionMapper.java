@@ -9,13 +9,19 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.cibertec.votoelectronico.resource.communication.ValidationResponse;
 
 @Provider
 public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
 
+	private final Logger LOG = LoggerFactory.getLogger(ValidationExceptionMapper.class);
+
 	@Override
 	public Response toResponse(ConstraintViolationException exception) {
+		LOG.warn(exception.getMessage());
 		Response.ResponseBuilder builder = Response.status(Response.Status.BAD_REQUEST);
 		Map<String, String> validations = new HashMap<String, String>();
 		exception.getConstraintViolations().forEach(v -> {

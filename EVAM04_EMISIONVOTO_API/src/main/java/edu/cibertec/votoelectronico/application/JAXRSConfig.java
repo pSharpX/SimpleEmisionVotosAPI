@@ -8,6 +8,7 @@ import javax.ws.rs.core.Application;
 
 import edu.cibertec.votoelectronico.filter.CorsFilter;
 import edu.cibertec.votoelectronico.filter.LoggingFilter;
+import edu.cibertec.votoelectronico.validation.ValidationExceptionMapper;
 //import edu.cibertec.votoelectronico.resource.SimpleVotoElectronicoResource;
 
 @ApplicationPath("/v1")
@@ -25,6 +26,7 @@ public class JAXRSConfig extends Application {
 		Set<Object> singletons = new HashSet<>();
 		singletons.add(new CorsFilter());
 		singletons.add(new LoggingFilter());
+		singletons.add(new ValidationExceptionMapper());
 		return singletons;
 	}
 

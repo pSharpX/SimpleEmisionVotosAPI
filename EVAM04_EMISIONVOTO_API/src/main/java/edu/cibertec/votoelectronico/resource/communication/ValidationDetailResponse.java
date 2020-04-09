@@ -2,7 +2,7 @@ package edu.cibertec.votoelectronico.resource.communication;
 
 import java.util.Map;
 
-public class ValidationResponse extends BaseResponse {
+public class ValidationDetailResponse extends BaseResponse {
 
 	/**
 	 * 
@@ -11,21 +11,21 @@ public class ValidationResponse extends BaseResponse {
 
 	private Map<String, String> validations;
 
-	private ValidationResponse(boolean success, String message, Map<String, String> validations) {
+	private ValidationDetailResponse(boolean success, String message, Map<String, String> validations) {
 		super(success, message);
 		this.setValidations(validations);
 	}
 
-	public ValidationResponse() {
-		super();
+	public ValidationDetailResponse() {
+		this(true, "", null);
 	}
 
-	public ValidationResponse(Map<String, String> validations) {
-		this(false, "", validations);
-	}
-
-	public ValidationResponse(String message) {
+	public ValidationDetailResponse(String message) {
 		this(false, message, null);
+	}
+
+	public ValidationDetailResponse(String message, Map<String, String> validations) {
+		this(false, message, validations);
 	}
 
 	public Map<String, String> getValidations() {

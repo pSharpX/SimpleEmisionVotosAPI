@@ -1,8 +1,10 @@
 package edu.cibertec.votoelectronico.resource.communication;
 
+import java.util.Map;
+
 import edu.cibertec.votoelectronico.dto.VotoDto;
 
-public class EmisionVotoResponse extends BaseResponse {
+public class EmisionVotoResponse extends ValidationDetailResponse {
 
 	/**
 	 * 
@@ -11,21 +13,21 @@ public class EmisionVotoResponse extends BaseResponse {
 
 	private VotoDto data;
 
-	private EmisionVotoResponse(boolean success, String message, VotoDto data) {
-		super(success, message);
-		this.setData(data);
-	}
-
 	public EmisionVotoResponse() {
 		super();
 	}
 
 	public EmisionVotoResponse(VotoDto data) {
-		this(true, "", data);
+		super();
+		this.setData(data);
 	}
 
 	public EmisionVotoResponse(String message) {
-		this(false, message, null);
+		super(message);
+	}
+
+	public EmisionVotoResponse(String message, Map<String, String> validations) {
+		super(message, validations);
 	}
 
 	public VotoDto getData() {

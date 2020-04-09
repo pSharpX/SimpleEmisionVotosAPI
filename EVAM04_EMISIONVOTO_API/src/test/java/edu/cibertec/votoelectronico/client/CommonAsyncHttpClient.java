@@ -3,7 +3,7 @@ package edu.cibertec.votoelectronico.client;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public interface CommonAsyncHttpClient extends AsyncHttpClient {
+public interface CommonAsyncHttpClient extends AsyncHttpClient, ListAsyncHttpClient {
 
 	@Override
 	default <T> CompletableFuture<T> getAsync(String path, Map<String, Object> header, Class<T> responseType) {

@@ -1,7 +1,9 @@
 package edu.cibertec.votoelectronico.client;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 
 import javax.ws.rs.client.Client;
@@ -45,6 +47,20 @@ public class JAXRSAsyncHttpClientWithSSE implements CommonAsyncHttpClient, HttpC
 		});
 		source.open();
 		return source;
+	}
+
+	@Override
+	public <T, E> List<CompletableFuture<T>> requestAsync(String path, REQUEST_METHOD method, List<E> collectionEntity,
+			Map<String, Object> header, Class<T> responseType, int requestCount) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T, E> List<CompletionStage<T>> requestNativeAsync(String path, REQUEST_METHOD method,
+			List<E> collectionEntity, Map<String, Object> header, Class<T> responseType, int requestCount) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

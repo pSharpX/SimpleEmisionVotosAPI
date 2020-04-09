@@ -94,9 +94,8 @@ public class SimpleVotoElectronicoResource implements VotoElectronicoResource {
 			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 			Validator validator = factory.getValidator();
 			Set<ConstraintViolation<EmisionVotoDto>> violations = validator.validate(resource);
-			if (violations.size() > 0) {
+			if (violations.size() > 0)
 				throw new ConstraintViolationException(violations);
-			}
 
 			GrupoPolitico grupoPolitico = this.grupoPoliticoService.findByName(resource.getGrupoPolitico());
 			if (Objects.isNull(grupoPolitico)) {

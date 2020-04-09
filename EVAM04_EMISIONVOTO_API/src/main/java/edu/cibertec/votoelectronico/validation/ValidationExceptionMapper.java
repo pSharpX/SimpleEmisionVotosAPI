@@ -12,7 +12,7 @@ import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.cibertec.votoelectronico.resource.communication.ValidationResponse;
+import edu.cibertec.votoelectronico.resource.communication.ValidationDetailResponse;
 
 @Provider
 public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
@@ -29,7 +29,7 @@ public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViol
 					.reduce((first, second) -> second).orElse(null).getName(), v.getMessage());
 			builder.header("Error-Description", v.getMessage());
 		});
-		return builder.entity(new ValidationResponse(validations)).build();
+		return builder.entity(new ValidationDetailResponse(exception.getMessage(), validations)).build();
 	}
 
 }

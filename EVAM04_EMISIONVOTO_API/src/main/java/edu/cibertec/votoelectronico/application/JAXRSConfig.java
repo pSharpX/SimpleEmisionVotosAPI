@@ -11,6 +11,7 @@ import edu.cibertec.votoelectronico.filter.LoggingFilter;
 import edu.cibertec.votoelectronico.validation.ValidationExceptionMapper;
 import edu.cibertec.votoelectronico.resource.SimpleSSEVotoElectronicoResource;
 import edu.cibertec.votoelectronico.resource.SimpleVotoElectronicoResource;
+import edu.cibertec.votoelectronico.resource.SimpleVotoElectronicoResourceAsync;
 
 @ApplicationPath("/v1")
 public class JAXRSConfig extends Application {
@@ -20,6 +21,7 @@ public class JAXRSConfig extends Application {
 		HashSet<Class<?>> set = new HashSet<Class<?>>();
 		set.add(SimpleVotoElectronicoResource.class);
 		set.add(SimpleSSEVotoElectronicoResource.class);
+		set.add(SimpleVotoElectronicoResourceAsync.class);
 		set.add(ValidationExceptionMapper.class);
 		return set;
 	}

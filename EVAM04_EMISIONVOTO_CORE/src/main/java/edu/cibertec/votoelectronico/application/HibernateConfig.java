@@ -4,6 +4,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
 import org.hibernate.ogm.cfg.OgmConfiguration;
+import org.hibernate.search.FullTextSession;
+import org.hibernate.search.Search;
 import org.hibernate.service.ServiceRegistry;
 
 import org.slf4j.Logger;
@@ -19,12 +21,15 @@ import edu.cibertec.votoelectronico.domain.Voto;
 public class HibernateConfig {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HibernateConfig.class);
+
 	private static final SessionFactory sessionFactory;
 	private static final ServiceRegistry serviceRegistry;
 
 	static {
 		try {
-			// create a new instance of OmgConfiguration
+			/*
+			 * create a new instance of OmgConfiguration
+			 **/
 			OgmConfiguration cfgogm = new OgmConfiguration();
 
 			// enable transaction strategy
@@ -32,18 +37,24 @@ public class HibernateConfig {
 			cfgogm.setProperty(Environment.TRANSACTION_COORDINATOR_STRATEGY, "jta");
 			cfgogm.setProperty(Environment.CURRENT_SESSION_CONTEXT_CLASS, "jta");
 
-			// specify JTA platform
+			/*
+			 * specify JTA platform
+			 **/
 			cfgogm.setProperty(Environment.JTA_PLATFORM, "JBossTS");
 //			cfgogm.setProperty(Environment.JTA_PLATFORM, "org.hibernate.service.jta.platform.internal.JBossStandAloneJtaPlatform");
 
-			// in order to select the local JBoss JTA implementation it is necessary to
-			// specify
+			/*
+			 * in order to select the local JBoss JTA implementation it is necessary to
+			 * specify
+			 **/
 //			cfgogm.setProperty("com.arjuna.ats.jta.jtaTMImplementation",
 //					"com.arjuna.ats.internal.jta.transaction.arjunacore.TransactionManagerImple");
 //			cfgogm.setProperty("com.arjuna.ats.jta.jtaUTImplementation",
 //					"com.arjuna.ats.internal.jta.transaction.arjunacore.UserTransactionImple");
 
-			// configure MongoDB connection
+			/*
+			 * configure MongoDB connection
+			 **/
 			cfgogm.setProperty("hibernate.ogm.datastore.provider", "mongodb");
 //			cfgogm.setProperty("hibernate.ogm.datastore.grid_dialect",
 //					"org.hibernate.ogm.dialect.mongodb.MongoDBDialect");
@@ -55,11 +66,22 @@ public class HibernateConfig {
 			cfgogm.setProperty("hibernate.ogm.datastore.host", "127.0.0.1");
 			cfgogm.setProperty("hibernate.ogm.datastore.port", "27017");
 
-			// add our annotated class
+			/*
+			 * Configuration for Hibernate Search/Apache Lucene Querying
+			 **/
+			cfgogm.setProperty("hibernate.search.default.directory_provider", "filesystem");
+			cfgogm.setProperty("hibernate.search.default.indexBase", "./Indexes");
+			cfgogm.setProperty("hibernate.search.default.locking_strategy", "single");
+
+			/*
+			 * add our annotated class
+			 **/
 			cfgogm.addAnnotatedClass(GrupoPolitico.class);
 			cfgogm.addAnnotatedClass(Voto.class);
 
-			// create the SessionFactory
+			/*
+			 * create the SessionFactory
+			 **/
 			serviceRegistry = new StandardServiceRegistryBuilder().applySettings(cfgogm.getProperties()).build();
 			sessionFactory = cfgogm.buildSessionFactory(serviceRegistry);
 
@@ -71,6 +93,10 @@ public class HibernateConfig {
 
 	public static SessionFactory getSessionFactory() {
 		return sessionFactory;
+	}
+
+	public static FullTextSession getFullTextSession() {
+		return Search.getFullTextSession(sessionFactory.getCurrentSession());
 	}
 
 }

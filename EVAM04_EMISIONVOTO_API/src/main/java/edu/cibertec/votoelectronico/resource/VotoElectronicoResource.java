@@ -2,6 +2,7 @@ package edu.cibertec.votoelectronico.resource;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -12,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import edu.cibertec.votoelectronico.dto.EmisionVotoDto;
+import edu.cibertec.votoelectronico.dto.PageDto;
 
 @Path("/votoelectronico")
 @Consumes({ MediaType.APPLICATION_JSON })
@@ -28,7 +30,7 @@ public interface VotoElectronicoResource {
 
 	@GET
 	@Path("/")
-	public Response obtener();
+	public Response obtener(@BeanParam @Valid PageDto page);
 
 	@POST
 	@Path("/emitir")

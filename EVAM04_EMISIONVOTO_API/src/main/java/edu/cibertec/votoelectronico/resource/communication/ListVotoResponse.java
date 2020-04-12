@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import edu.cibertec.votoelectronico.dto.VotoDto;
 
-public class ListVotoResponse extends BaseResponse {
+public class ListVotoResponse extends PageResponse {
 
 	/**
 	 * 
@@ -13,21 +13,23 @@ public class ListVotoResponse extends BaseResponse {
 
 	private Collection<VotoDto> data;
 
-	private ListVotoResponse(boolean success, String message, Collection<VotoDto> data) {
-		super(success, message);
-		this.setData(data);
-	}
-
 	public ListVotoResponse() {
 		super();
 	}
 
+	public ListVotoResponse(int currentPage, int pageSize, int totalPages, int totalItems, String orderBy,
+			boolean orderByDesc, Collection<VotoDto> data) {
+		super(currentPage, pageSize, totalPages, totalItems, orderBy, orderByDesc);
+		this.setData(data);
+	}
+
 	public ListVotoResponse(Collection<VotoDto> data) {
-		this(true, "", data);
+		super();
+		this.setData(data);
 	}
 
 	public ListVotoResponse(String message) {
-		this(false, message, null);
+		super(message);
 	}
 
 	public Collection<VotoDto> getData() {

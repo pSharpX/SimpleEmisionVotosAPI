@@ -1,6 +1,7 @@
 package edu.cibertec.votoelectronico.resource;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -26,6 +27,7 @@ import edu.cibertec.votoelectronico.domain.GrupoPolitico;
 import edu.cibertec.votoelectronico.domain.Voto;
 import edu.cibertec.votoelectronico.domain.complex.VotoResumen;
 import edu.cibertec.votoelectronico.dto.EmisionVotoDto;
+import edu.cibertec.votoelectronico.dto.PageDto;
 import edu.cibertec.votoelectronico.dto.VotoDto;
 import edu.cibertec.votoelectronico.dto.VotoResumenDto;
 import edu.cibertec.votoelectronico.mapping.MapperFactoryRegistry;
@@ -34,6 +36,7 @@ import edu.cibertec.votoelectronico.resource.communication.ListVotoResponse;
 import edu.cibertec.votoelectronico.resource.communication.ResumenProcesoResponse;
 import edu.cibertec.votoelectronico.service.GrupoPoliticoService;
 import edu.cibertec.votoelectronico.service.VotoService;
+import edu.cibertec.votoelectronico.shared.Pagination;
 
 @Component
 @Path("/votoelectronico")
@@ -42,6 +45,7 @@ public class SimpleVotoElectronicoResource implements VotoElectronicoResource {
 	private final Logger LOG = LoggerFactory.getLogger(SimpleVotoElectronicoResource.class);
 
 	UriInfo uriInfo;
+	ValidatorFactory factory;
 
 	@Autowired
 	private VotoService votoService;
@@ -53,6 +57,7 @@ public class SimpleVotoElectronicoResource implements VotoElectronicoResource {
 	@PostConstruct
 	public void init() {
 		LOG.info("On Init method...");
+		factory = Validation.buildDefaultValidatorFactory();
 	}
 
 	@Context
@@ -91,7 +96,6 @@ public class SimpleVotoElectronicoResource implements VotoElectronicoResource {
 	@Override
 	public Response emitirVoto(EmisionVotoDto resource) throws ConstraintViolationException {
 		try {
-			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 			Validator validator = factory.getValidator();
 			Set<ConstraintViolation<EmisionVotoDto>> violations = validator.validate(resource);
 			if (violations.size() > 0)
@@ -116,12 +120,22 @@ public class SimpleVotoElectronicoResource implements VotoElectronicoResource {
 	}
 
 	@Override
-	public Response obtener() {
+	public Response obtener(PageDto page) {
 		try {
-			Collection<Voto> votos = this.votoService.list();
+			Validator validator = factory.getValidator();
+			Set<ConstraintViolation<PageDto>> violations = validator.validate(page);
+			if (violations.size() > 0)
+				throw new ConstraintViolationException(violations);
+			Pagination<Voto> result = this.votoService.list(page.getPage(), page.getSize());
+			List<Voto> votos = result.getResult();
 			Function<Voto, VotoDto> convert = (Voto object) -> this.mapper.convertFrom(object, VotoDto.class);
 			Collection<VotoDto> collection = votos.stream().map(convert).collect(Collectors.toList());
-			return Response.status(Response.Status.OK).entity(new ListVotoResponse(collection)).build();
+			return Response.status(Response.Status.OK)
+					.entity(new ListVotoResponse(result.getCurrentPage(), result.getPageSize(), result.getTotalPages(),
+							result.getTotalItems(), result.getOrderBy(), result.isOrderByDesc(), collection))
+					.build();
+		} catch (ConstraintViolationException e) {
+			throw e;
 		} catch (Exception e) {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ListVotoResponse(e.getMessage()))
 					.build();

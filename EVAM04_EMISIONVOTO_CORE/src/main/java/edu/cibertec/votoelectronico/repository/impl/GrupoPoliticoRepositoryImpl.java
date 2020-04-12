@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import edu.cibertec.votoelectronico.application.HibernateConfig;
 import edu.cibertec.votoelectronico.domain.GrupoPolitico;
 import edu.cibertec.votoelectronico.repository.GrupoPoliticoRepository;
+import edu.cibertec.votoelectronico.shared.Pagination;
 
 @Repository
 public class GrupoPoliticoRepositoryImpl extends BaseRepository implements GrupoPoliticoRepository {
@@ -92,6 +93,12 @@ public class GrupoPoliticoRepositoryImpl extends BaseRepository implements Grupo
 			LOG.error("Se encontraron varios grupoPolitico con el mismo nombre " + name + ". " + e.getMessage());
 			return grupoPolitico;
 		}
+	}
+
+	@Override
+	public Pagination<GrupoPolitico> getAll(int page, int size) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

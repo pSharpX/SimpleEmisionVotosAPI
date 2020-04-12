@@ -12,6 +12,7 @@ import edu.cibertec.votoelectronico.domain.Voto;
 import edu.cibertec.votoelectronico.domain.complex.VotoResumen;
 import edu.cibertec.votoelectronico.repository.VotoRepository;
 import edu.cibertec.votoelectronico.service.VotoService;
+import edu.cibertec.votoelectronico.shared.Pagination;
 
 @Service
 public class VotoServiceImpl implements VotoService {
@@ -33,12 +34,16 @@ public class VotoServiceImpl implements VotoService {
 			LOG.error("Ocurred an error while trying emit a vote. " + e.getMessage());
 			throw e;
 		}
-
 	}
 
 	@Override
 	public List<Voto> list() {
 		return this.repository.getAll();
+	}
+
+	@Override
+	public Pagination<Voto> list(int page, int size) {
+		return this.repository.getAll(page, size);
 	}
 
 	@Override

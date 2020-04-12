@@ -16,10 +16,20 @@ import javax.persistence.NamedNativeQuery;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.DateBridge;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.Resolution;
+import org.hibernate.search.annotations.Store;
 
 import edu.cibertec.votoelectronico.domain.listener.VotoListener;
 
 @Entity
+@Indexed
 @Table(name = "votos")
 @EntityListeners(VotoListener.class)
 @NamedNativeQueries({
@@ -27,16 +37,23 @@ import edu.cibertec.votoelectronico.domain.listener.VotoListener;
 public class Voto {
 
 	@Id
+	@DocumentId
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Type(type = "objectid")
 	private String votoId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn( name = "grupoPolitico" )
+	@JoinColumn(name = "grupoPolitico")
+	@IndexedEmbedded
 	private GrupoPolitico grupoPolitico;
 
+	@Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
 	private String dni;
+
+	@Field(index = Index.YES, analyze = Analyze.NO, store = Store.NO)
+	@DateBridge(resolution = Resolution.YEAR)
 	private Date fecha;
+
 	private String hash;
 
 	public Voto() {

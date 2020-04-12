@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import edu.cibertec.votoelectronico.domain.GrupoPolitico;
 import edu.cibertec.votoelectronico.repository.GrupoPoliticoRepository;
 import edu.cibertec.votoelectronico.service.GrupoPoliticoService;
+import edu.cibertec.votoelectronico.shared.Pagination;
 
 @Service
 public class GrupoPoliticoServiceImpl implements GrupoPoliticoService {
@@ -23,6 +24,12 @@ public class GrupoPoliticoServiceImpl implements GrupoPoliticoService {
 	@Override
 	public GrupoPolitico findByName(String name) throws Exception {
 		return this.repository.findByName(name);
+	}
+
+	@Override
+	public Pagination<GrupoPolitico> list(int page, int size) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

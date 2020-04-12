@@ -15,22 +15,34 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
 
 @Entity
+@Indexed
 @Table(name = "grupoPoliticos")
 @NamedNativeQueries({
 		@NamedNativeQuery(name = "QN_GRUPO_POLITICO_DELETE_ALL", query = "db.grupoPoliticos.drop()", resultClass = GrupoPolitico.class) })
 public class GrupoPolitico {
 
 	@Id
+	@DocumentId
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Type(type = "objectid")
 	private String grupoPoliticoId;
 
+	@Field(index = Index.YES, analyze = Analyze.YES, store = Store.NO)
 	private String nombre;
+
 	private String descripcion;
 
 	@OneToMany(mappedBy = "grupoPolitico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ContainedIn
 	private Set<Voto> votos = new HashSet<>();
 
 	public GrupoPolitico() {

@@ -12,6 +12,10 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 
+import org.hibernate.search.jpa.FullTextQuery;
+import org.hibernate.search.query.DatabaseRetrievalMethod;
+import org.hibernate.search.query.ObjectLookupMethod;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -20,6 +24,7 @@ import edu.cibertec.votoelectronico.application.HibernateConfig;
 import edu.cibertec.votoelectronico.domain.Voto;
 import edu.cibertec.votoelectronico.domain.complex.VotoResumen;
 import edu.cibertec.votoelectronico.repository.VotoRepository;
+import edu.cibertec.votoelectronico.shared.Pagination;
 
 @Repository
 public class VotoRepositoryImpl extends BaseRepository implements VotoRepository {
@@ -40,6 +45,29 @@ public class VotoRepositoryImpl extends BaseRepository implements VotoRepository
 	public List<Voto> getAll() {
 		TypedQuery<Voto> query = this.em.createQuery(Q_GET_ALL, Voto.class);
 		return query.getResultList();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Pagination<Voto> getAll(int page, int size) {
+		QueryBuilder queryBuilder = this.fullTextEntityManager.getSearchFactory().buildQueryBuilder()
+				.forEntity(Voto.class).get();
+		org.apache.lucene.search.Query query = queryBuilder.all().createQuery();
+		FullTextQuery fullTextQuery = this.fullTextEntityManager.createFullTextQuery(query, Voto.class);
+		fullTextQuery.initializeObjectsWith(ObjectLookupMethod.SKIP, DatabaseRetrievalMethod.FIND_BY_ID);
+		fullTextQuery.setFirstResult(((page - 1) * size));
+		fullTextQuery.setMaxResults(size);
+		List<Voto> results = fullTextQuery.getResultList();
+		int totalItems = fullTextQuery.getResultSize();
+		int totalPages = (int) Math.ceil((double) totalItems / size);
+
+		Pagination<Voto> pagination = new Pagination<Voto>();
+		pagination.setResult(results);
+		pagination.setCurrentPage(page);
+		pagination.setPageSize(size);
+		pagination.setTotalItems(totalItems);
+		pagination.setTotalPages(totalPages);
+		return pagination;
 	}
 
 	@Override

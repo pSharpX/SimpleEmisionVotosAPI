@@ -18,17 +18,17 @@ public class EmisionVotoDto implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@NotBlank(message = "GrupoPolitico cannot be null")
-	@GrupoPoliticoMustExist(message = "Grupo Politico must exist")
+	@NotBlank(message = "{emisionvoto.grupoPolitico.notblank}")
+	@GrupoPoliticoMustExist(message = "{emisionvoto.grupoPolitico.grupopoliticomustexist}")
 	private String grupoPolitico;
 
-	@NotBlank(message = "DNI cannot be null")
-	@Size(min = 8, max = 8, message = "DNI must have 8 characters")
-	@DniNotExist(message = "DNI already registered. It must be unique")
+	@NotBlank(message = "{emisionvoto.dni.notblank}")
+	@Size(min = 8, max = 8, message = "{emisionvoto.dni.size}")
+	@DniNotExist(message = "{emisionvoto.dni.dninotexist}")
 	private String dni;
 
-	@NotNull(message = "Fecha cannot be null")
-	@ValidDate
+	@NotNull(message = "{emisionvoto.fecha.notnull}")
+	@ValidDate(message = "{emisionvoto.fecha.validdate}")
 	private String fecha;
 
 	public String getGrupoPolitico() {

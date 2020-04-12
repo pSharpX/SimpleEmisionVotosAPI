@@ -139,7 +139,7 @@ public class SimpleVotoElectronicoClient {
 //				.filter(r -> r.isSuccess()).count();
 		
 		
-		long duration = (System.nanoTime() - start) / 1_000_000;
+//		long duration = (System.nanoTime() - start) / 1_000_000;
 //		LOG.info("Final Result - Total Created: [{}], in [{}]", created, duration);
 	}
 

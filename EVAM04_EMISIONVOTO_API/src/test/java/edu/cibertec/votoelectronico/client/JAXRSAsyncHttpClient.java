@@ -15,7 +15,6 @@ import javax.annotation.PreDestroy;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -107,34 +106,9 @@ public class JAXRSAsyncHttpClient implements CommonAsyncHttpClient {
 	public <T, E> CompletableFuture<T> requestAsync(String path, REQUEST_METHOD method, E entity,
 			Map<String, Object> header, Class<T> responseType) {
 		return CompletableFuture.supplyAsync(() -> {
-			WebTarget target = client.target(path);
+			Builder builder = configureTarget(path, header);
 
-			Builder builder = target.request().accept(MediaType.APPLICATION_JSON);
-			if (!Objects.isNull(header) && !header.isEmpty()) {
-				header.forEach((key, value) -> {
-					builder.header(key, value);
-				});
-			}
-
-			Response response = null;
-			switch (method) {
-			case GET:
-				response = builder.get();
-				break;
-			case POST:
-				response = builder.post(Entity.json(entity));
-				break;
-			case PUT:
-				response = builder.put(Entity.json(entity));
-				break;
-			case DELETE:
-				response = builder.delete();
-				break;
-			default:
-				response = builder.get();
-				break;
-			}
-			T value = response.readEntity(responseType);
+			T value = invokeTarget(method, builder, entity, responseType);
 			LOG.info("[{}]", Thread.currentThread().getId());
 			LOG.info(value.toString());
 			return value;

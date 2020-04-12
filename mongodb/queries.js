@@ -1,10 +1,12 @@
-/** To search */
+/** To search */
 db.grupoPoliticos.find();
 db.votos.find();
 
-/** To Drop collections **/
-db.grupoPoliticos.drop();
-db.votos.drop();
+db.votos.count();
+
+/** To Drop collections **/
+db.grupoPoliticos.drop();
+db.votos.drop();
 
 db.votos.aggregate([
     {"$group" : {_id:"$grupoPolitico", count:{$sum:1}}}

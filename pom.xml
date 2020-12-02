@@ -20,7 +20,7 @@
 		<version.jar.plugin>2.2</version.jar.plugin>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
-		<version.org.eclipse.jetty>9.4.17.v20190418</version.org.eclipse.jetty>
+		<version.org.eclipse.jetty>9.4.35.v20201120</version.org.eclipse.jetty>
 		<version.wildfly.maven.plugin>1.0.2.Final</version.wildfly.maven.plugin>
 		<resteasy.version>3.11.1.Final</resteasy.version>
 		<spring.version>5.2.4.RELEASE</spring.version>
